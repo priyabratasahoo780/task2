@@ -9,17 +9,13 @@ function QuickViewModal({ product, onClose }) {
 
     const alreadyInCart = cart.some((item) => item.id === product?.id);
 
-    // Close on Escape key
     const handleKeyDown = useCallback(
-        (e) => {
-            if (e.key === 'Escape') onClose();
-        },
+        (e) => { if (e.key === 'Escape') onClose(); },
         [onClose]
     );
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
-        // Prevent body scroll while modal is open
         document.body.style.overflow = 'hidden';
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
@@ -41,39 +37,35 @@ function QuickViewModal({ product, onClose }) {
 
     return (
         <div
-            className="modal-overlay"
+            className="modal-backdrop"
             onClick={onClose}
             role="dialog"
             aria-modal="true"
             aria-label={`Quick view: ${product.title}`}
         >
-            <div
-                className="modal-panel"
-                onClick={(e) => e.stopPropagation()}
-            >
-                {/* Close button */}
-                <button className="modal-close" onClick={onClose} aria-label="Close modal">
-                    ×
-                </button>
+            <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
+                <button className="modal-close" onClick={onClose} aria-label="Close modal">×</button>
 
-                {/* Image */}
-                <div className="modal-image-wrap">
-                    <img src={product.image} alt={product.title} className="modal-image" />
-                </div>
+                <div className="modal-content">
+                    <div className="modal-image-wrap">
+                        <img src={product.image} alt={product.title} className="modal-image" />
+                    </div>
 
-                {/* Details */}
-                <div className="modal-details">
-                    <span className="product-category">{product.category}</span>
-                    <h2 className="modal-title">{product.title}</h2>
-                    <StarRating rate={product?.rating?.rate} count={product?.rating?.count} />
-                    <p className="modal-price">${product.price.toFixed(2)}</p>
-                    <p className="modal-description">{product.description}</p>
-                    <button
-                        className={`btn-add-to-cart modal-add-btn ${alreadyInCart ? 'in-cart' : ''}`}
-                        onClick={handleAdd}
-                    >
-                        {alreadyInCart ? '✓ In Cart — Add More' : 'Add to Cart'}
-                    </button>
+                    <div className="modal-info">
+                        <span className="modal-category">{product.category}</span>
+                        <h2 className="modal-title">{product.title}</h2>
+                        <StarRating rate={product?.rating?.rate} count={product?.rating?.count} />
+                        <p className="modal-price">${product.price.toFixed(2)}</p>
+                        <p className="modal-description">{product.description}</p>
+                        <div className="modal-cta">
+                            <button
+                                className={`btn-add-to-cart ${alreadyInCart ? 'in-cart' : ''}`}
+                                onClick={handleAdd}
+                            >
+                                {alreadyInCart ? '✓ In Cart — Add More' : 'Add to Cart'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

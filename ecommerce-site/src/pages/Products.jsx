@@ -22,12 +22,10 @@ function Products() {
     const [sortBy, setSortBy] = useState('default');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // Price range
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [appliedMin, setAppliedMin] = useState('');
     const [appliedMax, setAppliedMax] = useState('');
-    // Recently viewed
     const [recentlyViewed, setRecentlyViewed] = useState(() => {
         try {
             const stored = localStorage.getItem('recentlyViewed');
@@ -35,13 +33,11 @@ function Products() {
         } catch { return []; }
     });
 
-    // Debounce search by 300ms
     useEffect(() => {
         const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
         return () => clearTimeout(t);
     }, [searchQuery]);
 
-    // Fetch once
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -62,7 +58,6 @@ function Products() {
         fetchProducts();
     }, []);
 
-    // Track recently viewed — stable callback
     const handleRecentlyViewed = useCallback((product) => {
         setRecentlyViewed((prev) => {
             const filtered = prev.filter((p) => p.id !== product.id);
@@ -87,7 +82,6 @@ function Products() {
         setAppliedMax('');
     };
 
-    // All filters + sort — in-memory, no refetch
     const displayedProducts = useMemo(() => {
         let result = [...products];
 
@@ -98,9 +92,7 @@ function Products() {
         if (debouncedSearch.trim()) {
             const q = debouncedSearch.toLowerCase();
             result = result.filter(
-                (p) =>
-                    p.title.toLowerCase().includes(q) ||
-                    p.category.toLowerCase().includes(q)
+                (p) => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
             );
         }
 
@@ -165,19 +157,24 @@ function Products() {
                     )}
                 </div>
 
-                {/* Category + Sort */}
-                <div className="filters-row">
-                    <div className="filter-wrapper">
-                        <label htmlFor="category-filter" className="filter-label">Category</label>
-                        <select id="category-filter" className="category-select" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-                            {categories.map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {cat === 'all' ? 'All Categories' : cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                </option>
-                            ))}
-                        </select>
+                {/* Category Pill Buttons */}
+                <div>
+                    <p className="filter-label" style={{ marginBottom: '0.5rem' }}>Category</p>
+                    <div className="category-pills">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                className={`pill-btn ${selectedCategory === cat ? 'active' : ''}`}
+                                onClick={() => setSelectedCategory(cat)}
+                            >
+                                {cat === 'all' ? 'All' : cat}
+                            </button>
+                        ))}
                     </div>
+                </div>
 
+                {/* Sort + Price */}
+                <div className="filters-row">
                     <div className="filter-wrapper">
                         <label htmlFor="sort-select" className="filter-label">Sort by</label>
                         <select id="sort-select" className="category-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
@@ -186,43 +183,26 @@ function Products() {
                             ))}
                         </select>
                     </div>
-                </div>
 
-                {/* Price Range Filter */}
-                <div className="price-range-row">
-                    <span className="filter-label">Price Range:</span>
-                    <div className="price-inputs">
-                        <div className="price-input-wrap">
-                            <span className="price-symbol">$</span>
-                            <input
-                                type="number"
-                                className="price-input"
-                                placeholder="Min"
-                                min="0"
-                                value={minPrice}
-                                onChange={(e) => setMinPrice(e.target.value)}
-                                aria-label="Minimum price"
-                            />
+                    <div className="price-range-row">
+                        <span className="filter-label">Price Range:</span>
+                        <div className="price-inputs">
+                            <div className="price-input-wrap">
+                                <span className="price-symbol">$</span>
+                                <input type="number" className="price-input" placeholder="Min" min="0" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} aria-label="Minimum price" />
+                            </div>
+                            <span className="price-dash">—</span>
+                            <div className="price-input-wrap">
+                                <span className="price-symbol">$</span>
+                                <input type="number" className="price-input" placeholder="Max" min="0" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} aria-label="Maximum price" />
+                            </div>
+                            <button className="btn-apply-price" onClick={applyPriceFilter}>Apply</button>
+                            {(appliedMin || appliedMax) && (
+                                <button className="btn-clear-price" onClick={() => { setMinPrice(''); setMaxPrice(''); setAppliedMin(''); setAppliedMax(''); }}>
+                                    Clear
+                                </button>
+                            )}
                         </div>
-                        <span className="price-dash">—</span>
-                        <div className="price-input-wrap">
-                            <span className="price-symbol">$</span>
-                            <input
-                                type="number"
-                                className="price-input"
-                                placeholder="Max"
-                                min="0"
-                                value={maxPrice}
-                                onChange={(e) => setMaxPrice(e.target.value)}
-                                aria-label="Maximum price"
-                            />
-                        </div>
-                        <button className="btn-apply-price" onClick={applyPriceFilter}>Apply</button>
-                        {(appliedMin || appliedMax) && (
-                            <button className="btn-clear-price" onClick={() => { setMinPrice(''); setMaxPrice(''); setAppliedMin(''); setAppliedMax(''); }}>
-                                Clear
-                            </button>
-                        )}
                     </div>
                 </div>
             </section>
@@ -244,7 +224,7 @@ function Products() {
                 </div>
             )}
 
-            {/* Loading — text shown as required + skeleton cards for visual feedback */}
+            {/* Loading */}
             {loading && (
                 <>
                     <p className="loading-text">Loading products…</p>

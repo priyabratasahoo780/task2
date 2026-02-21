@@ -1,14 +1,13 @@
-// Shimmer skeleton placeholder while products are loading
 function SkeletonCard() {
     return (
-        <div className="skeleton-card" aria-hidden="true">
-            <div className="skeleton skeleton-image" />
+        <div className="skeleton-card">
+            <div className="skeleton-img skeleton-line" />
             <div className="skeleton-body">
-                <div className="skeleton skeleton-line short" />
-                <div className="skeleton skeleton-line" />
-                <div className="skeleton skeleton-line medium" />
-                <div className="skeleton skeleton-price" />
-                <div className="skeleton skeleton-btn" />
+                <div className="skeleton-line short" />
+                <div className="skeleton-line medium" />
+                <div className="skeleton-line long" />
+                <div className="skeleton-line short" />
+                <div className="skeleton-line long" style={{ height: '36px', borderRadius: '8px', marginTop: '0.25rem' }} />
             </div>
         </div>
     );
